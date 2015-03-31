@@ -15,14 +15,32 @@ MainWindow::MainWindow(QWidget *parent) :
     operacja.dodajParametr(atrybut1);
     operacja.dodajParametr(atrybut2);
     operacja.dodajParametr(atrybut3);
+
+
     KoderCpp* koder = new KoderCpp;
     Koder* kod = koder;
     QString zdekodowany,zakodowany;
-    zakodowany << operacja;
-    zdekodowany = kod->dekodujOperacje(operacja);
-    QString str = zakodowany + "\n" + zdekodowany;
+
+    Klasa* klasa = new Klasa("Klasa");
+    PrzestrzenNazw* przestrzen = new PrzestrzenNazw("PrzestrzenNazw");
+    przestrzen->dodajOperacje(operacja);
+    Operacja operacja2("druga","integer",wPublic,przezWskaznik,true,true,true,N,100);
+    przestrzen->dodajOperacje(operacja2);
+//    Element* element = klasa;
+//    koder->wprowadzElementDoPliku("nic",element);
+//    zdekodowany = element->getNazwa();
+
+//    element = przestrzen;
+//    koder->wprowadzElementDoPliku("nic",element);
+//    zakodowany = element->getNazwa();
+
+    zakodowany = przestrzen->getWszystkieOperacje();
+
+    delete klasa;
+    delete przestrzen;
     delete koder;
-    ui->textEdit->setText(str);
+
+    ui->textEdit->setText(zakodowany);
 }
 
 MainWindow::~MainWindow()

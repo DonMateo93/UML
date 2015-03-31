@@ -24,9 +24,12 @@ public:
 //    virtual void wprowadzAsocjacjeDoPliku();
 //    virtual void wprowadzKompozycjeDoPliku();
 //    virtual void generujKodDoPliku(QString path = "");
-//    virtual void wprowadzPrzestrzenNazwDoPliku();
+    virtual bool wprowadzElementDoPliku(QString FilePath, PrzestrzenNazw* przestrzen, PrzestrzenNazw* doJakiej) = 0;
     virtual QString dekodujAtrybut(const Atrybut& atrybut) = 0;
     virtual QString dekodujOperacje(const Operacja& operacja) = 0;
+    virtual QString dekodujBlokOperacji(const QString& BlokOperacji) = 0;
+    virtual QString dekodujBlokAtrybutow(const QString& BlokAtrybutow) = 0;
+//    virtual QString dajListeAtrybutow();
 
     Koder();
     ~Koder();
@@ -46,11 +49,15 @@ public:
 //    void wprowadzDependencyDoPliku();
 //    void wprowadzAsocjacjeDoPliku();
 //    void wprowadzKompozycjeDoPliku();
-//    void wprowadzPrzestrzenNazwDoPliku(QString path, PrzestrzenNazw* przestrzen);
+    bool wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw *Przestrzen, PrzestrzenNazw *DoJakiej);
+    void wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa);
     void generujKodDoPliku(QString path);
-    QString KoderCpp::dekodujAtrybut(const QString& atrybut);
+    QString dekodujAtrybut(const QString& atrybut);
     QString dekodujAtrybut(const Atrybut& atrybut);
     QString dekodujOperacje(const Operacja& operacja);
+    QString dekodujOperacje(const QString& operacja);
+    QString dekodujBlokOperacji(const QString& BlokOperacji);
+    QString dekodujBlokAtrybutow(const QString& BlokAtrybutow);
 
 };
 

@@ -50,12 +50,15 @@ public:
     Element(QString nazwa = ""):NazwaElementu(nazwa)
     {}
     ~Element();
+    QString getNazwa();
+    void zmienNazwe(QString NowaNazwa);
     void dodajAtrybut(Atrybut atrybut);
     void czyJestAtrybut(Atrybut atrybut);
     void zmienWlasciwosciAtrybutuONazwie(QString nazwa, QString typ, Widocznosc wid, Krotnosc ile, bool czyStatyczna, bool czyConst,int n);
     void wymazAtrybut(QString atrybut);
     QString atrybutGetText();
     virtual QString dajInfoDlaKodera() = 0;
+    QString getWszystkieAtrybuty();
 };
 
 class ElementZOperacjami: public Element
@@ -63,11 +66,12 @@ class ElementZOperacjami: public Element
 protected:
     QVector<Operacja> WektorOperacji;
 public:
-    ElementZOperacjami(QString nazwa = "");
-    void dodajOperacje(Operacja operacja);
+    ElementZOperacjami(QString nazwa = ""):Element(nazwa){}
+    void dodajOperacje(const Operacja &operacja);
     void czyJestOperacja(QString operacja);
     void zmienWlasciwosciOperacjiONazwie(QString nazwa, QString typ, Widocznosc wid, Krotnosc ile, bool czyStatyczna, bool czyConst,int n, QString komentarz, PrzekazanieParametru przekaz);
     void wymazOperacje(QString operacja);
+    QString getWszystkieOperacje();
 
 };
 
@@ -184,13 +188,14 @@ public:
     {
         IleElementow--;
     }
-    QString dajInfoDlaKodera();
+    QString dajInfoDlaKodera(){return "Klasa";}
 };
 
 class Struktura: public ElementZOperacjami
 {
 public:
-    QString dajInfoDlaKodera();
+    QString dajInfoDlaKodera(){return "Struktura";}
+
     Struktura(QString nazwa = ""):ElementZOperacjami(nazwa)
     {
         IleElementow++;
@@ -205,7 +210,7 @@ public:
 class PrzestrzenNazw: public ElementZOperacjami
 {
 public:
-    QString dajInfoDlaKodera();
+    QString dajInfoDlaKodera(){return "Package";}
     PrzestrzenNazw(QString nazwa = ""):ElementZOperacjami(nazwa)
     {
         IleElementow++;

@@ -35,6 +35,16 @@ operator<<(QString& wyjscie, const ParametrOperacji parOp)
     return wyjscie;
 }
 
+void Element::zmienNazwe(QString NowaNazwa)
+{
+    NazwaElementu = NowaNazwa;
+}
+
+QString Element::getNazwa()
+{
+    return NazwaElementu;
+}
+
 QString&
 operator<<(QString& napis, Operacja Op)
 {
@@ -241,4 +251,40 @@ int Operacja::dodajParametr(Atrybut Parametr)
 {
     ListaParamMetod.push_back(Parametr);
     return int(1);
+}
+
+QString Element::getWszystkieAtrybuty()
+{
+    QString WszystkieAtrybuty = "";
+    for(int i = 0; i < WektorAtrybutow.size(); i++)
+    {
+        WszystkieAtrybuty << WektorAtrybutow[i];
+
+        if(i < WektorAtrybutow.size() - 1)
+            WszystkieAtrybuty += "\n";
+    }
+
+    return WszystkieAtrybuty;
+
+}
+
+void ElementZOperacjami::dodajOperacje(const Operacja& operacja)
+{   //TU I W PODOBNYCH DODAĆ SPRAWDZANIE CZY SIĘ NIE POWTARZA
+    WektorOperacji.push_back(operacja);
+}
+
+QString ElementZOperacjami::getWszystkieOperacje()
+{
+    QString WszystkieOperacje = "";
+    QString pom;
+    for(int i = 0; i < WektorOperacji.size(); i++)
+    {
+        pom << WektorOperacji[i];
+        WszystkieOperacje += pom;
+
+        if(i < WektorOperacji.size() - 1)
+            WszystkieOperacje += "\n";
+    }
+
+    return WszystkieOperacje;
 }
