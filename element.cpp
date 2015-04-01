@@ -256,9 +256,12 @@ int Operacja::dodajParametr(Atrybut Parametr)
 QString Element::getWszystkieAtrybuty()
 {
     QString WszystkieAtrybuty = "";
+    QString pom = "";
+
     for(int i = 0; i < WektorAtrybutow.size(); i++)
     {
-        WszystkieAtrybuty << WektorAtrybutow[i];
+        pom << WektorAtrybutow[i];
+        WszystkieAtrybuty += pom;
 
         if(i < WektorAtrybutow.size() - 1)
             WszystkieAtrybuty += "\n";
@@ -287,4 +290,57 @@ QString ElementZOperacjami::getWszystkieOperacje()
     }
 
     return WszystkieOperacje;
+}
+
+void Element::dodajAtrybut(Atrybut atrybut)
+{
+    if(!czyJestAtrybutONazwie(atrybut))
+    {
+        WektorAtrybutow.push_back(atrybut);
+    }else
+    {
+        //OBSŁUGA BŁĘDÓW
+    }
+}
+
+QString SkladowaElementu::getNazwa()
+{
+    return Nazwa;
+}
+
+bool Element::czyJestAtrybutONazwie(Atrybut atrybut)
+{
+    bool ok = false;
+
+    for(int i = 0; i < WektorAtrybutow.size(); i ++)
+    {
+        if(WektorAtrybutow[i].getNazwa() == atrybut.getNazwa())
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    return ok;
+}
+
+bool Element::czyJestAtrybutONazwie(const QString& nazwa)
+{
+    bool ok = false;
+
+    for(int i = 0; i < WektorAtrybutow.size(); i ++)
+    {
+        if(nazwa == WektorAtrybutow[i].getNazwa())
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    return ok;
+}
+
+PrzekazanieParametru Operacja::przezCoPrzekazujesz()
+{
+    return Przekaz;
 }

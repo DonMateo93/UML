@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <C:\Users\avans\Documents\UML\element.h>
 #include <C:\Users\avans\Documents\UML\koder.h>
+#include <QFile>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     operacja.dodajParametr(atrybut3);
 
 
-    KoderCpp* koder = new KoderCpp;
-    Koder* kod = koder;
+
+    Koder* kod = new KoderCpp;
     QString zdekodowany,zakodowany;
 
     Klasa* klasa = new Klasa("Klasa");
@@ -26,21 +28,37 @@ MainWindow::MainWindow(QWidget *parent) :
     przestrzen->dodajOperacje(operacja);
     Operacja operacja2("druga","integer",wPublic,przezWskaznik,true,true,true,N,100);
     przestrzen->dodajOperacje(operacja2);
-//    Element* element = klasa;
-//    koder->wprowadzElementDoPliku("nic",element);
-//    zdekodowany = element->getNazwa();
+    przestrzen->dodajAtrybut(atrybut1);
+    przestrzen->dodajAtrybut(atrybut2);
 
-//    element = przestrzen;
-//    koder->wprowadzElementDoPliku("nic",element);
-//    zakodowany = element->getNazwa();
+    PrzestrzenNazw* przestrzen2 = new PrzestrzenNazw("PrzestrzenDruga");
+    Atrybut atrybut4("Jasio","integral",wProtected,N,"10",false,false,8);
+    Atrybut atrybut5("stasio","intfsdfegral",wPrivate,Jeden,"",false,true,19);
 
-    zakodowany = przestrzen->getWszystkieOperacje();
+    Operacja operacja3("trzecia","dupa",wPrivate,przezReferencje,true,false,false,JedenLubX);
+    operacja3.dodajParametr(atrybut2);
 
+    Operacja operacja4("czwarta","int");
+
+    przestrzen2->dodajAtrybut(atrybut4);
+    przestrzen2->dodajAtrybut(atrybut5);
+
+    przestrzen2->dodajOperacje(operacja3);
+    przestrzen2->dodajOperacje(operacja4);
+    przestrzen2->dodajOperacje(operacja);
+
+    QString nazwapliku = "pierwsze.h";
+
+    kod->wprowadzElementDoPliku(nazwapliku,przestrzen,NULL);
+    kod->wprowadzElementDoPliku(nazwapliku,przestrzen2,NULL);
+    kod->poprawKodWPliku(nazwapliku);
     delete klasa;
     delete przestrzen;
-    delete koder;
+    delete przestrzen2;
+    delete kod;
 
-    ui->textEdit->setText(zakodowany);
+
+    //ui->textEdit->setText(zakodowany);
 }
 
 MainWindow::~MainWindow()

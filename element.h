@@ -6,7 +6,7 @@
 #include <QVector>
 
 //DODAĆ ITERATORY
-
+//DODAC FUNKCJE CZY JEST OPERACJA O NAZWIE
 class Atrybut;
 
 class Operacja;
@@ -59,6 +59,8 @@ public:
     QString atrybutGetText();
     virtual QString dajInfoDlaKodera() = 0;
     QString getWszystkieAtrybuty();
+    bool czyJestAtrybutONazwie(Atrybut atrybut);
+    bool czyJestAtrybutONazwie(const QString& nazwa);
 };
 
 class ElementZOperacjami: public Element
@@ -89,15 +91,10 @@ protected:
     virtual void aktualizujKomentarz() = 0;
 
 public:
-    SkladowaElementu(QString nazwa = "", QString typ = "", Widocznosc wid = wPrivate, bool czyStatyczna = false, bool czyConst = false,Krotnosc ile = Jeden,int ileN = 0):Nazwa(nazwa),Typ(typ), Visibility(wid),CzyStatyczna(czyStatyczna), CzyConst(czyConst),Ile(ile),n(ileN)
+    SkladowaElementu(QString nazwa, QString typ, Widocznosc wid = wPrivate, bool czyStatyczna = false, bool czyConst = false,Krotnosc ile = Jeden,int ileN = 0):Nazwa(nazwa),Typ(typ), Visibility(wid),CzyStatyczna(czyStatyczna), CzyConst(czyConst),Ile(ile),n(ileN)
     {}
 
-
-//    friend QString&
-//        operator<<(QString& napis, Operacja operacja);
-
-//    friend QString&
-//        operator<<(QString& napis, Atrybut atrybut);
+    QString getNazwa();
 
 };
 
@@ -147,6 +144,8 @@ public:
         operator<<(QString& napis, Operacja operacja);
 
     void aktualizujKomentarz();
+    PrzekazanieParametru przezCoPrzekazujesz();
+
 };
 
 class KontenerOperacji

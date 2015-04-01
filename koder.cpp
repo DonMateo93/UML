@@ -26,66 +26,74 @@ QString KoderCpp::dekodujAtrybut(const Atrybut& atrybut)
     bool ok = false;
     bool ok2 = false;
 
-    for(int i = 0; i < list.size(); i++ )
+    if(zakodowany != "")
     {
-        str = str + "\n" + list[i];
-    }
-
-
-
-    int ind1 = list.indexOf("{");
-
-    if(list[ind1+1] != "}" && ind1 != -1)
-    {
-        QStringList list2 = list[ind1+1].split(",");
-        for(int i = 0; i < list2.size(); i++ )
+        //DO WYWALENIA
+        for(int i = 0; i < list.size(); i++ )
         {
-            zdekodowany = zdekodowany + list2[i] + " ";
-        }
-    }
-
-    ind1 = list.indexOf(":");
-
-    if(ind1 + 2 < list.size())
-    {
-
-        if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
-        {
-            ok = true;
-            if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
-                ok2 = true;
+            str = str + "\n" + list[i];
         }
 
-        if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+
+
+        int ind1 = list.indexOf("{");
+
+        if(list[ind1+1] != "}" && ind1 != -1)
         {
-            if(list[ind1+2] == "1..*")
-                zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
-            else if(list[ind1+2] == "0..*")
-                zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
-            else if(ok2)
+            QStringList list2 = list[ind1+1].split(",");
+            for(int i = 0; i < list2.size(); i++ )
             {
-                zdekodowany = zdekodowany + list[list.indexOf(":")+1] + "[" + list[ind1+2] + "] ";
+                zdekodowany = zdekodowany + list2[i] + " ";
+            }
+        }
+
+        ind1 = list.indexOf(":");
+
+        if(ind1 + 2 < list.size())
+        {
+
+            if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
+            {
+                ok = true;
+                if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
+                    ok2 = true;
+            }
+
+            if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+            {
+                if(list[ind1+2] == "1..*")
+                    zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
+                else if(list[ind1+2] == "0..*")
+                    zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
+                else if(ok2)
+                {
+                    zdekodowany = zdekodowany + list[list.indexOf(":")+1] + "[" + list[ind1+2] + "] ";
+                }
+            }else
+            {
+                zdekodowany = zdekodowany + list[list.indexOf(":")+1];
             }
         }else
         {
             zdekodowany = zdekodowany + list[list.indexOf(":")+1];
         }
+
+        if(zdekodowany[zdekodowany.size()-2] == ' ')
+            zdekodowany = zdekodowany + list[list.indexOf(":")-1];
+        else
+            zdekodowany = zdekodowany + " " + list[list.indexOf(":")-1];
+
+        if(list.contains("="))
+        {
+            zdekodowany = zdekodowany + " = " + list[list.indexOf("=") + 1] + " ";
+        }
+
+        zdekodowany = zdekodowany + ";";
     }else
     {
-        zdekodowany = zdekodowany + list[list.indexOf(":")+1];
+        //ZASTANOWIĆ SIĘ CZY NIE DODAĆ OBSŁUGI BŁĘDÓW
+        zdekodowany = "";
     }
-
-    if(zdekodowany[zdekodowany.size()-2] == ' ')
-        zdekodowany = zdekodowany + list[list.indexOf(":")-1];
-    else
-        zdekodowany = zdekodowany + " " + list[list.indexOf(":")-1];
-
-    if(list.contains("="))
-    {
-        zdekodowany = zdekodowany + " = " + list[list.indexOf("=") + 1] + " ";
-    }
-
-    zdekodowany = zdekodowany + ";";
 
     return zdekodowany;
 }
@@ -114,9 +122,9 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
 
     int ind1 = list.lastIndexOf("{");
 
-    if(list[ind1+1] != "}")
+    if(list[ind1+1] != "}" && ind1 != -1)
     {
-        QStringList list2 = list[ind1+1].split(",");
+        QStringList list2 = list[ind1+1].split(",",QString::SkipEmptyParts);
         for(int i = 0; i < list2.size(); i++ )
         {
             zdekodowany = zdekodowany + list2[i] + " ";
@@ -125,22 +133,36 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
 
     ind1 = list.lastIndexOf(":");
 
-    if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
+    //SPRAWDZANIE MULTIPLICITY
+    if(ind1+2<list.size())
     {
-        ok = true;
-        if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
-            ok2 = true;
-    }
-
-    if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
-    {
-        if(list[ind1+2] == "1..*")
-            zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + "> ";
-        else if(list[ind1+2] == "0..*")
-            zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + "> ";
-        else if(ok2)
+        if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
         {
-            zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + "[" + list[ind1+2] + "] ";
+            ok = true;
+            if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
+                ok2 = true;
+        }
+
+        if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+        {
+            QString pomoCh = list[list.lastIndexOf(":")+1][list[list.lastIndexOf(":")+1].size() - 1]; //Ostatni znak w stringu przechowującym typ(może to być * lub &)
+            if(pomoCh == "*" || pomoCh == "&")
+            {
+                list[list.lastIndexOf(":")+1].chop(1);
+            }
+            else
+                pomoCh = "";
+            if(list[ind1+2] == "1..*")
+                zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + ">" + pomoCh + " ";
+            else if(list[ind1+2] == "0..*")
+                zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + ">" + pomoCh + " ";
+            else if(ok2)
+            {
+                zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + "[" + list[ind1+2] + "] ";
+            }
+        }else
+        {
+            zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + " ";
         }
     }else
     {
@@ -168,7 +190,7 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
     str = "";
     str = list2.join(" ");
     list2.clear();
-    list2 = str.split(" , ");
+    list2 = str.split(" , ",QString::SkipEmptyParts);
 
     str = "";
     QString pom = "";
@@ -207,9 +229,9 @@ QString KoderCpp::dekodujOperacje(const QString& operacja)
 
     int ind1 = list.lastIndexOf("{");
 
-    if(list[ind1+1] != "}")
+    if(list[ind1+1] != "}" && ind1 != -1)
     {
-        QStringList list2 = list[ind1+1].split(",");
+        QStringList list2 = list[ind1+1].split(",",QString::SkipEmptyParts);
         for(int i = 0; i < list2.size(); i++ )
         {
             zdekodowany = zdekodowany + list2[i] + " ";
@@ -218,22 +240,36 @@ QString KoderCpp::dekodujOperacje(const QString& operacja)
 
     ind1 = list.lastIndexOf(":");
 
-    if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
+    //SPRAWDZANIE MULTIPLICITY
+    if(ind1+2<list.size())
     {
-        ok = true;
-        if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
-            ok2 = true;
-    }
-
-    if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
-    {
-        if(list[ind1+2] == "1..*")
-            zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + "> ";
-        else if(list[ind1+2] == "0..*")
-            zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + "> ";
-        else if(ok2)
+        if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
         {
-            zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + "[" + list[ind1+2] + "] ";
+            ok = true;
+            if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
+                ok2 = true;
+        }
+
+        if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+        {
+            QString pomoCh = list[list.lastIndexOf(":")+1][list[list.lastIndexOf(":")+1].size() - 1]; //Ostatni znak w stringu przechowującym typ(może to być * lub &)
+            if(pomoCh == "*" || pomoCh == "&")
+            {
+                list[list.lastIndexOf(":")+1].chop(1);
+            }
+            else
+                pomoCh = "";
+            if(list[ind1+2] == "1..*")
+                zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + ">" + pomoCh + " ";
+            else if(list[ind1+2] == "0..*")
+                zdekodowany = zdekodowany + "std::deque<" + list[list.lastIndexOf(":")+1] + ">" + pomoCh + " ";
+            else if(ok2)
+            {
+                zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + "[" + list[ind1+2] + "] ";
+            }
+        }else
+        {
+            zdekodowany = zdekodowany + list[list.lastIndexOf(":")+1] + " ";
         }
     }else
     {
@@ -261,7 +297,7 @@ QString KoderCpp::dekodujOperacje(const QString& operacja)
     str = "";
     str = list2.join(" ");
     list2.clear();
-    list2 = str.split(" , ");
+    list2 = str.split(" , ",QString::SkipEmptyParts);
 
     str = "";
     QString pom = "";
@@ -293,105 +329,118 @@ QString KoderCpp::dekodujAtrybut(const QString& atrybut)
     bool ok = false;
     bool ok2 = false;
 
-    for(int i = 0; i < list.size(); i++ )
+    if(zakodowany != "")
     {
-        str = str + "\n" + list[i];
-    }
-
-
-
-    int ind1 = list.indexOf("{");
-
-    if(list[ind1+1] != "}" && ind1 != -1)
-    {
-        QStringList list2 = list[ind1+1].split(",");
-        for(int i = 0; i < list2.size(); i++ )
+        //DO WYWALENIA
+        for(int i = 0; i < list.size(); i++ )
         {
-            zdekodowany = zdekodowany + list2[i] + " ";
-        }
-    }
-
-    ind1 = list.indexOf(":");
-
-    if(ind1 + 2 < list.size())
-    {
-
-        if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
-        {
-            ok = true;
-            if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
-                ok2 = true;
+            str = str + "\n" + list[i];
         }
 
-        if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+
+
+        int ind1 = list.indexOf("{");
+
+        if(list[ind1+1] != "}" && ind1 != -1)
         {
-            if(list[ind1+2] == "1..*")
-                zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
-            else if(list[ind1+2] == "0..*")
-                zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
-            else if(ok2)
+            QStringList list2 = list[ind1+1].split(",");
+            for(int i = 0; i < list2.size(); i++ )
             {
-                zdekodowany = zdekodowany + list[list.indexOf(":")+1] + "[" + list[ind1+2] + "] ";
+                zdekodowany = zdekodowany + list2[i] + " ";
+            }
+        }
+
+        ind1 = list.indexOf(":");
+
+        if(ind1 + 2 < list.size())
+        {
+
+            if(list[ind1+2].contains('0') || list[ind1+2].contains('1')|| list[ind1+2].contains('2')|| list[ind1+2].contains('3')|| list[ind1+2].contains('4')|| list[ind1+2].contains('5')|| list[ind1+2].contains('6')|| list[ind1+2].contains('7')|| list[ind1+2].contains('8')|| list[ind1+2].contains('9'))
+            {
+                ok = true;
+                if( ! ( list[ind1+2].contains('.') || list[ind1+2].contains('.') ) )
+                    ok2 = true;
+            }
+
+            if(list[ind1+2] == "1..*" || list[ind1+2] == "0..1" || list[ind1+2] == "0..*" || ok)
+            {
+                if(list[ind1+2] == "1..*")
+                    zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
+                else if(list[ind1+2] == "0..*")
+                    zdekodowany = zdekodowany + "std::deque<" + list[list.indexOf(":")+1] + "> ";
+                else if(ok2)
+                {
+                    zdekodowany = zdekodowany + list[list.indexOf(":")+1] + "[" + list[ind1+2] + "] ";
+                }
+            }else
+            {
+                zdekodowany = zdekodowany + list[list.indexOf(":")+1];
             }
         }else
         {
             zdekodowany = zdekodowany + list[list.indexOf(":")+1];
         }
+
+        if(zdekodowany[zdekodowany.size()-2] == ' ')
+            zdekodowany = zdekodowany + list[list.indexOf(":")-1];
+        else
+            zdekodowany = zdekodowany + " " + list[list.indexOf(":")-1];
+
+        if(list.contains("="))
+        {
+            zdekodowany = zdekodowany + " = " + list[list.indexOf("=") + 1] + " ";
+        }
+
+        zdekodowany = zdekodowany + ";";
     }else
     {
-        zdekodowany = zdekodowany + list[list.indexOf(":")+1];
+        //ZASTANOWIĆ SIĘ CZY NIE DODAĆ OBSŁUGI BŁĘDÓW
+        zdekodowany = "";
     }
-
-    if(zdekodowany[zdekodowany.size()-2] == ' ')
-        zdekodowany = zdekodowany + list[list.indexOf(":")-1];
-    else
-        zdekodowany = zdekodowany + " " + list[list.indexOf(":")-1];
-
-    if(list.contains("="))
-    {
-        zdekodowany = zdekodowany + " = " + list[list.indexOf("=") + 1] + " ";
-    }
-
-    zdekodowany = zdekodowany + ";";
 
     return zdekodowany;
 }
 
-bool KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* Przestrzen, PrzestrzenNazw* DoJakiej = NULL)
+void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* Przestrzen, PrzestrzenNazw* DoJakiej)
 {
-    bool ok = true;
     QFile Plik(FilePathAndName);
     QString pom;
+
     if(DoJakiej == NULL)
     {
-        if(Plik.open(QIODevice::WriteOnly,QIODevice::Append))
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
         {
             QTextStream stream(&Plik);
 
-            stream << "namespace " + Przestrzen->getNazwa() + "\n{";
+            stream << "namespace " + Przestrzen->getNazwa() + "\n{\n" ;
 
 
             pom = Przestrzen->getWszystkieAtrybuty();
-            pom = dekodujBlokAtrybutow(pom);
+            pom = dekodujBlokAtrybutow(pom,true);
             stream << pom;
 
 
             pom = Przestrzen->getWszystkieOperacje();
             pom = dekodujBlokOperacji(pom);
-            QStringList ListaPom = pom.split("\n");
+            QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
 
             for(int i = 0; i < ListaPom.size(); i++)
             {
-                stream<<(ListaPom[i] + "\n{\n\n}");
+                stream<<(ListaPom[i] + "\n{\n\n}\n");
             }
 
+            stream << "\n}\n";
+
+            Plik.close();
+
         }else
-            ok = false;
+        {
+            //DODAC OBSLUGE BLEDU
+        }
     }else
     {
 
     }
-    return "fadfsd";
 }
 
 void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa)
@@ -411,11 +460,12 @@ QString KoderCpp::dekodujBlokOperacji(const QString& BlokOperacji)
 
     QString ZdekodowanyBlok;
     ZdekodowanyBlok = ListaOperacji.join("\n");
+    ZdekodowanyBlok += "\n";
 
     return ZdekodowanyBlok;
 
 }
-QString KoderCpp::dekodujBlokAtrybutow(const QString& BlokAtrybutow)
+QString KoderCpp::dekodujBlokAtrybutow(const QString& BlokAtrybutow, bool CzyZPustymiLiniami)
 {
     QStringList ListaAtrybutow = BlokAtrybutow.split("\n");
 
@@ -425,7 +475,126 @@ QString KoderCpp::dekodujBlokAtrybutow(const QString& BlokAtrybutow)
     }
 
     QString ZdekodowanyBlok;
-    ZdekodowanyBlok = ListaAtrybutow.join("\n");
+    if(CzyZPustymiLiniami)
+    {
+        ZdekodowanyBlok = ListaAtrybutow.join("\n\n");
+        ZdekodowanyBlok += "\n\n";
+    }
+    else
+    {
+        ZdekodowanyBlok = ListaAtrybutow.join("\n");
+        ZdekodowanyBlok += "\n";
+
+    }
 
     return ZdekodowanyBlok;
+}
+
+void KoderCpp::poprawKodWPliku(const QString &PathAndName)
+{
+    //UNIEMOŻLIWIĆ WPISANIE PLIK POMOCNICZY W FILE DIALOG
+    QFile Plik(PathAndName);
+    QFile PlikPom("PlikPomocniczy.txt");
+    int ileNawiasow = 0;
+    bool ok = true;
+    bool pomocB = false;
+
+
+    if(Plik.open(QIODevice::ReadOnly|QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly|QIODevice::Text|QIODevice::Truncate))
+    {
+        if(Plik.size() != 0)
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString linia;
+            QString pomoc = "";
+
+            linia = in.readLine();
+            while(!linia.isNull())
+            {
+                linia.remove('\t');
+                if(linia.contains("{"))
+                {
+                    pomoc = "";
+
+                    for(int i = 0; i < ileNawiasow; i++)
+                    {
+                        pomoc += "\t";
+                    }
+
+                    linia = pomoc + linia + "\n\n";
+                    ileNawiasow++;
+                    pomocB = false;
+                }else if(linia.contains("}"))
+                {
+                    ileNawiasow--;
+
+                    pomoc = "";
+
+                    for(int i = 0; i < ileNawiasow; i++)
+                    {
+                        pomoc += "\t";
+                    }
+                    linia = pomoc + linia + "\n\n";
+                    pomocB = false;
+                }else if(linia == "")
+                {
+
+                }
+                else
+                {
+                    pomoc = "";
+
+                    for(int i = 0; i < ileNawiasow; i++)
+                    {
+                        pomoc += "\t";
+                    }
+
+                    if(pomocB)
+                        linia = "\n" + pomoc + linia + "\n";
+                    else
+                        linia = pomoc + linia + "\n";
+
+                    pomocB = true;
+                }
+
+                out << linia;
+                linia = in.readLine();
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::Text|QIODevice::WriteOnly|QIODevice::Truncate)| PlikPom.open(QIODevice::ReadOnly|QIODevice::Text))
+            {
+                QTextStream in2(&PlikPom);
+                QTextStream out2(&Plik);
+
+                if(PlikPom.size() != 0)
+                {
+                    linia = in2.readLine();
+                    while(!linia.isNull())
+                    {
+                        out2 << linia+ "\n";
+                        linia = in2.readLine();
+                    }
+
+                    Plik.close();
+                    PlikPom.close();
+                    PlikPom.remove();
+
+                }else
+                    ok = false;
+
+            }else
+                ok = false;
+        }else
+            ok = false;
+    }else
+        ok = false;
+
+    if(!ok)
+    {
+        //OBSŁUGA BŁĘDÓW
+    }
 }
