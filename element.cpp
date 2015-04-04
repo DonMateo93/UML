@@ -141,6 +141,8 @@ KontenerOperacji::~KontenerOperacji()
 QString&
 operator<<(QString& napis, Atrybut atrybut)
 {
+    if(!atrybut.doEnum)
+    {
     napis = "";
     QString pomoc2;
     switch (atrybut.Visibility)
@@ -197,6 +199,12 @@ operator<<(QString& napis, Atrybut atrybut)
 
     if(atrybut.Komentarz != "")
         napis = napis + " { " + atrybut.Komentarz + " }";
+    }else
+    {
+        napis = atrybut.Nazwa;
+        if(atrybut.DomyslnaWartosc != "")
+            napis += "=" + atrybut.DomyslnaWartosc;
+    }
 
     return napis;
 }
@@ -343,4 +351,51 @@ bool Element::czyJestAtrybutONazwie(const QString& nazwa)
 PrzekazanieParametru Operacja::przezCoPrzekazujesz()
 {
     return Przekaz;
+}
+
+QString Element::getAtrybutyOSpecyfikatorzeDostepu(Widocznosc SpecyfikatorDostepu)
+{
+    QString Atrybuty = "";
+    QString pom = "";
+
+    for(int i = 0; i < WektorAtrybutow.size(); i++)
+    {
+        if(WektorAtrybutow[i].getSpecyfikatorDostepu() == SpecyfikatorDostepu)
+        {
+            pom << WektorAtrybutow[i];
+            Atrybuty += pom;
+            Atrybuty += "\n";
+        }
+    }
+
+    if(Atrybuty != "")
+        Atrybuty.chop(1);
+
+    return Atrybuty;
+}
+
+QString ElementZOperacjami::getOperacjeOSpecyfikatorzeDostepu(Widocznosc SpecyfikatorDostepu)
+{
+    QString Operacje = "";
+    QString pom = "";
+
+    for(int i = 0; i < WektorOperacji.size(); i++)
+    {
+        if(WektorOperacji[i].getSpecyfikatorDostepu() == SpecyfikatorDostepu)
+        {
+            pom << WektorOperacji[i];
+            Operacje += pom;
+            Operacje += "\n";
+        }
+    }
+
+    if(Operacje != "")
+        Operacje.chop(1);
+
+    return Operacje;
+}
+
+Widocznosc SkladowaElementu::getSpecyfikatorDostepu()
+{
+    return Visibility;
 }

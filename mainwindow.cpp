@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Operacja operacja3("trzecia","dupa",wPrivate,przezReferencje,true,false,false,JedenLubX);
     operacja3.dodajParametr(atrybut2);
 
-    Operacja operacja4("czwarta","int");
+    Operacja operacja4("czwarta","int",wProtected);
 
     przestrzen2->dodajAtrybut(atrybut4);
     przestrzen2->dodajAtrybut(atrybut5);
@@ -49,8 +49,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QString nazwapliku = "pierwsze.h";
 
+    klasa->dodajAtrybut(atrybut1);
+    klasa->dodajAtrybut(atrybut2);
+    klasa->dodajAtrybut(atrybut3);
+    klasa->dodajAtrybut(atrybut4);
+    klasa->dodajAtrybut(atrybut5);
+
+    klasa->dodajOperacje(operacja);
+    klasa->dodajOperacje(operacja2);
+    klasa->dodajOperacje(operacja3);
+    klasa->dodajOperacje(operacja4);
+
+    zakodowany = kod->przygotujBlokTekstuDoWpisaniaElementu(klasa);
     kod->wprowadzElementDoPliku(nazwapliku,przestrzen,NULL);
-    kod->wprowadzElementDoPliku(nazwapliku,przestrzen2,NULL);
+    kod->wprowadzElementDoPliku(nazwapliku,przestrzen2);
+    kod->wprowadzElementDoPliku(nazwapliku,klasa,przestrzen);
     kod->poprawKodWPliku(nazwapliku);
     delete klasa;
     delete przestrzen;
@@ -58,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     delete kod;
 
 
-    //ui->textEdit->setText(zakodowany);
+    ui->textEdit->setText(zakodowany);
 }
 
 MainWindow::~MainWindow()

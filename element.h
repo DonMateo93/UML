@@ -59,6 +59,7 @@ public:
     QString atrybutGetText();
     virtual QString dajInfoDlaKodera() = 0;
     QString getWszystkieAtrybuty();
+    QString getAtrybutyOSpecyfikatorzeDostepu(Widocznosc SpecyfikatorDostepu);
     bool czyJestAtrybutONazwie(Atrybut atrybut);
     bool czyJestAtrybutONazwie(const QString& nazwa);
 };
@@ -74,6 +75,8 @@ public:
     void zmienWlasciwosciOperacjiONazwie(QString nazwa, QString typ, Widocznosc wid, Krotnosc ile, bool czyStatyczna, bool czyConst,int n, QString komentarz, PrzekazanieParametru przekaz);
     void wymazOperacje(QString operacja);
     QString getWszystkieOperacje();
+    QString getOperacjeOSpecyfikatorzeDostepu(Widocznosc SpecyfikatorDostepu);
+
 
 };
 
@@ -95,6 +98,7 @@ public:
     {}
 
     QString getNazwa();
+    Widocznosc getSpecyfikatorDostepu();
 
 };
 
@@ -164,9 +168,10 @@ public:
 class Atrybut: public SkladowaElementu
 {
     QString DomyslnaWartosc;
+    bool doEnum;
 
 public:
-    Atrybut(QString nazwa = "",QString typ = "",Widocznosc wid = wPrivate,Krotnosc ile = Jeden,QString domyslnaWart = "", bool czyStatyczna = false, bool czyConst = false,int ileN = 0):SkladowaElementu(nazwa,typ,wid,czyStatyczna,czyConst,ile,ileN), DomyslnaWartosc(domyslnaWart)
+    Atrybut(QString nazwa = "",QString typ = "",Widocznosc wid = wPrivate,Krotnosc ile = Jeden,QString domyslnaWart = "", bool czyStatyczna = false, bool czyConst = false,int ileN = 0,bool czyDoEnum = false):SkladowaElementu(nazwa,typ,wid,czyStatyczna,czyConst,ile,ileN), DomyslnaWartosc(domyslnaWart),doEnum(czyDoEnum)
     {
         aktualizujKomentarz();
     }
@@ -218,6 +223,7 @@ public:
     {
         IleElementow--;
     }
+
 };
 
 class Unia: public Element

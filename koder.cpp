@@ -205,7 +205,7 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
             zdekodowany = zdekodowany + ", ";
     }
 
-    zdekodowany = zdekodowany  + ");";
+    zdekodowany = zdekodowany  + ")";
 
     return zdekodowany;
 }
@@ -312,7 +312,7 @@ QString KoderCpp::dekodujOperacje(const QString& operacja)
             zdekodowany = zdekodowany + ", ";
     }
 
-    zdekodowany = zdekodowany  + ");";
+    zdekodowany = zdekodowany  + ")";
 
     return zdekodowany;
 }
@@ -406,30 +406,33 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* P
     QFile Plik(FilePathAndName);
     QString pom;
 
-    if(DoJakiej == NULL)
+    if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
     {
         if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
         {
             QTextStream stream(&Plik);
 
-            stream << "namespace " + Przestrzen->getNazwa() + "\n{\n" ;
+            QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(Przestrzen);
+            stream << wszystko;
+
+//            stream << "namespace " + Przestrzen->getNazwa() + "\n{\n" ;
 
 
-            pom = Przestrzen->getWszystkieAtrybuty();
-            pom = dekodujBlokAtrybutow(pom,true);
-            stream << pom;
+//            pom = Przestrzen->getWszystkieAtrybuty();
+//            pom = dekodujBlokAtrybutow(pom,true);
+//            stream << pom;
 
 
-            pom = Przestrzen->getWszystkieOperacje();
-            pom = dekodujBlokOperacji(pom);
-            QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+//            pom = Przestrzen->getWszystkieOperacje();
+//            pom = dekodujBlokOperacji(pom);
+//            QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
 
-            for(int i = 0; i < ListaPom.size(); i++)
-            {
-                stream<<(ListaPom[i] + "\n{\n\n}\n");
-            }
+//            for(int i = 0; i < ListaPom.size(); i++)
+//            {
+//                stream<<(ListaPom[i] + "\n{\n\n}\n");
+//            }
 
-            stream << "\n}\n";
+//            stream << "\n}\n";
 
             Plik.close();
 
@@ -437,16 +440,385 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* P
         {
             //DODAC OBSLUGE BLEDU
         }
-    }else
+    }else // TRZEBA ZNALEZC W PLIKU NAMESPACE DO KTOREGO TRZEBA WPISAC NOWY
     {
+        QFile PlikPom("PlikPomocniczy.txt");
+        if(Plik.open(QIODevice::ReadOnly| QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString szukacz =  "namespace " + DoJakiej->getNazwa();
+            pom = in.readLine();
+            bool obserwator = false;
 
+            while(!pom.isNull()) // PRZEPISYWANIE DO POMOCNICZEGO PLIKU
+            {
+                out << pom + "\n";
+                if(pom.contains(szukacz)) //SZUKA GDZIE ZACZYNA SIE NAMESPACE DO KTOREGO TRZEBA WPISAC
+                {
+                    pom = in.readLine();
+                    out << pom + "\n";
+                    QString calosc = przygotujBlokTekstuDoWpisaniaElementu(Przestrzen);
+                    out << calosc;
+                    obserwator = true;
+                }
+
+                pom = in.readLine();
+
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
+                QTextStream in(&PlikPom);
+                QTextStream out(&Plik);
+
+                QString buffor = in.readAll();
+                out << buffor;
+
+                Plik.close();
+                PlikPom.close();
+                PlikPom.remove();
+
+            }else
+            {
+                //OBSLUGA BLEDU
+            }
+
+            if(!obserwator)
+            {
+                //POINFORMUJ O TYM ŻE NIE MA SZUKANEGO NAMESPACE W PLIKU
+            }
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
     }
 }
 
-void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa)
+void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Struktura* struktura, PrzestrzenNazw* DoJakiej)
 {
-    klasa->zmienNazwe("ZmienionoKlasa");
+    QFile Plik(FilePathAndName);
+    QString pom;
+
+    if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
+    {
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        {
+            QTextStream stream(&Plik);
+
+            QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(struktura);
+            stream << wszystko;
+
+            Plik.close();
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }else // TRZEBA ZNALEZC W PLIKU NAMESPACE DO KTOREGO TRZEBA WPISAC NOWY
+    {
+        QFile PlikPom("PlikPomocniczy.txt");
+        if(Plik.open(QIODevice::ReadOnly| QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString szukacz =  "namespace " + DoJakiej->getNazwa();
+            pom = in.readLine();
+            bool obserwator = false;
+
+            while(!pom.isNull()) // PRZEPISYWANIE DO POMOCNICZEGO PLIKU
+            {
+                out << pom + "\n";
+                if(pom.contains(szukacz)) //SZUKA GDZIE ZACZYNA SIE NAMESPACE DO KTOREGO TRZEBA WPISAC
+                {
+                    pom = in.readLine();
+                    out << pom + "\n";
+                    QString calosc = przygotujBlokTekstuDoWpisaniaElementu(struktura);
+                    out << calosc;
+                    obserwator = true;
+                }
+
+                pom = in.readLine();
+
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
+                QTextStream in(&PlikPom);
+                QTextStream out(&Plik);
+
+                QString buffor = in.readAll();
+                out << buffor;
+
+                Plik.close();
+                PlikPom.close();
+                PlikPom.remove();
+
+            }else
+            {
+                //OBSLUGA BLEDU
+            }
+
+            if(!obserwator)
+            {
+                //POINFORMUJ O TYM ŻE NIE MA SZUKANEGO NAMESPACE W PLIKU
+            }
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }
 }
+
+void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Wyliczenie* wyliczenie, PrzestrzenNazw* DoJakiej)
+{
+    QFile Plik(FilePathAndName);
+    QString pom;
+
+    if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
+    {
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        {
+            QTextStream stream(&Plik);
+
+            QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(wyliczenie);
+            stream << wszystko;
+
+            Plik.close();
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }else // TRZEBA ZNALEZC W PLIKU NAMESPACE DO KTOREGO TRZEBA WPISAC NOWY
+    {
+        QFile PlikPom("PlikPomocniczy.txt");
+        if(Plik.open(QIODevice::ReadOnly| QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString szukacz =  "namespace " + DoJakiej->getNazwa();
+            pom = in.readLine();
+            bool obserwator = false;
+
+            while(!pom.isNull()) // PRZEPISYWANIE DO POMOCNICZEGO PLIKU
+            {
+                out << pom + "\n";
+                if(pom.contains(szukacz)) //SZUKA GDZIE ZACZYNA SIE NAMESPACE DO KTOREGO TRZEBA WPISAC
+                {
+                    pom = in.readLine();
+                    out << pom + "\n";
+                    QString calosc = przygotujBlokTekstuDoWpisaniaElementu(wyliczenie);
+                    out << calosc;
+                    obserwator = true;
+                }
+
+                pom = in.readLine();
+
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
+                QTextStream in(&PlikPom);
+                QTextStream out(&Plik);
+
+                QString buffor = in.readAll();
+                out << buffor;
+
+                Plik.close();
+                PlikPom.close();
+                PlikPom.remove();
+
+            }else
+            {
+                //OBSLUGA BLEDU
+            }
+
+            if(!obserwator)
+            {
+                //POINFORMUJ O TYM ŻE NIE MA SZUKANEGO NAMESPACE W PLIKU
+            }
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }
+}
+
+void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Unia* unia, PrzestrzenNazw* DoJakiej)
+{
+    QFile Plik(FilePathAndName);
+    QString pom;
+
+    if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
+    {
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        {
+            QTextStream stream(&Plik);
+
+            QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(unia);
+            stream << wszystko;
+
+            Plik.close();
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }else // TRZEBA ZNALEZC W PLIKU NAMESPACE DO KTOREGO TRZEBA WPISAC NOWY
+    {
+        QFile PlikPom("PlikPomocniczy.txt");
+        if(Plik.open(QIODevice::ReadOnly| QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString szukacz =  "namespace " + DoJakiej->getNazwa();
+            pom = in.readLine();
+            bool obserwator = false;
+
+            while(!pom.isNull()) // PRZEPISYWANIE DO POMOCNICZEGO PLIKU
+            {
+                out << pom + "\n";
+                if(pom.contains(szukacz)) //SZUKA GDZIE ZACZYNA SIE NAMESPACE DO KTOREGO TRZEBA WPISAC
+                {
+                    pom = in.readLine();
+                    out << pom + "\n";
+                    QString calosc = przygotujBlokTekstuDoWpisaniaElementu(unia);
+                    out << calosc;
+                    obserwator = true;
+                }
+
+                pom = in.readLine();
+
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
+                QTextStream in(&PlikPom);
+                QTextStream out(&Plik);
+
+                QString buffor = in.readAll();
+                out << buffor;
+
+                Plik.close();
+                PlikPom.close();
+                PlikPom.remove();
+
+            }else
+            {
+                //OBSLUGA BLEDU
+            }
+
+            if(!obserwator)
+            {
+                //POINFORMUJ O TYM ŻE NIE MA SZUKANEGO NAMESPACE W PLIKU
+            }
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }
+}
+
+
+void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, PrzestrzenNazw *DoJakiej)
+{
+    QFile Plik(FilePathAndName);
+    QString pom;
+
+    if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
+    {
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        {
+            QTextStream stream(&Plik);
+
+            QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(klasa);
+            stream << wszystko;
+
+            Plik.close();
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }else // TRZEBA ZNALEZC W PLIKU NAMESPACE DO KTOREGO TRZEBA WPISAC NOWY
+    {
+        QFile PlikPom("PlikPomocniczy.txt");
+        if(Plik.open(QIODevice::ReadOnly| QIODevice::Text) && PlikPom.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+        {
+            QTextStream in(&Plik);
+            QTextStream out(&PlikPom);
+            QString szukacz =  "namespace " + DoJakiej->getNazwa();
+            pom = in.readLine();
+            bool obserwator = false;
+
+            while(!pom.isNull()) // PRZEPISYWANIE DO POMOCNICZEGO PLIKU
+            {
+                out << pom + "\n";
+                if(pom.contains(szukacz)) //SZUKA GDZIE ZACZYNA SIE NAMESPACE DO KTOREGO TRZEBA WPISAC
+                {
+                    pom = in.readLine();
+                    out << pom + "\n";
+                    QString calosc = przygotujBlokTekstuDoWpisaniaElementu(klasa);
+                    out << calosc;
+                    obserwator = true;
+                }
+
+                pom = in.readLine();
+
+            }
+
+            Plik.close();
+            PlikPom.close();
+
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
+                QTextStream in(&PlikPom);
+                QTextStream out(&Plik);
+
+                QString buffor = in.readAll();
+                out << buffor;
+
+                Plik.close();
+                PlikPom.close();
+                PlikPom.remove();
+
+            }else
+            {
+                //OBSLUGA BLEDU
+            }
+
+            if(!obserwator)
+            {
+                //POINFORMUJ O TYM ŻE NIE MA SZUKANEGO NAMESPACE W PLIKU
+            }
+
+        }else
+        {
+            //DODAC OBSLUGE BLEDU
+        }
+    }}
 
 
 QString KoderCpp::dekodujBlokOperacji(const QString& BlokOperacji)
@@ -541,6 +913,19 @@ void KoderCpp::poprawKodWPliku(const QString &PathAndName)
                 {
 
                 }
+                else if(linia.contains("private") || linia.contains("public") || linia.contains("protected"))
+                {
+                    if(pomocB)
+                        linia = "\n" + linia;
+
+                    pomoc = "";
+                    for(int i = 0; i < ileNawiasow -1; i ++)
+                        pomoc += "\t";
+
+                    linia += "\n";
+                    linia = pomoc + linia;
+                    pomocB = false;
+                }
                 else
                 {
                     pomoc = "";
@@ -598,3 +983,214 @@ void KoderCpp::poprawKodWPliku(const QString &PathAndName)
         //OBSŁUGA BŁĘDÓW
     }
 }
+
+// Zawiera wszystkie dane odnosnie elemetnu w jednym stringu gotowym do wpisania do pliku
+QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(PrzestrzenNazw* Przestrzen)
+{
+    QString zwracana = "";
+    if(Przestrzen != NULL)
+    {
+        QString pom = "";
+        zwracana += "namespace " + Przestrzen->getNazwa() + "\n{\n" ;
+
+
+        pom = Przestrzen->getWszystkieAtrybuty();
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+
+        pom = Przestrzen->getWszystkieOperacje();
+        pom = dekodujBlokOperacji(pom);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+        zwracana += "\n}\n";
+
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Klasa* klasa)
+{
+    QString zwracana = "";
+
+    if(klasa != NULL)
+    {
+        QString pom = "";
+
+        zwracana += "class " + klasa->getNazwa() + "\n{\n" ;
+        pom = klasa->getAtrybutyOSpecyfikatorzeDostepu(wPrivate);
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        pom = klasa->getOperacjeOSpecyfikatorzeDostepu(wPrivate);
+        pom = dekodujBlokOperacji(pom);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+        zwracana += "\nprotected:\n";
+        pom = klasa->getAtrybutyOSpecyfikatorzeDostepu(wProtected);
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        pom = klasa->getOperacjeOSpecyfikatorzeDostepu(wProtected);
+        pom = dekodujBlokOperacji(pom);
+        ListaPom.clear();
+        ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+        zwracana += "\npublic:\n";
+        pom = klasa->getAtrybutyOSpecyfikatorzeDostepu(wPublic);
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        pom = klasa->getOperacjeOSpecyfikatorzeDostepu(wPublic);
+        pom = dekodujBlokOperacji(pom);
+        ListaPom.clear();
+        ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+        zwracana += "\n};\n";
+
+
+    }else
+    {
+        //ZGłOŚ BŁĄD
+    }
+
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Struktura* struktura)
+{
+    QString zwracana = "";
+
+    if(struktura != NULL)
+    {
+        QString pom = "";
+
+        zwracana += "struct " + struktura->getNazwa() + "\n{\n" ;
+        pom = struktura->getAtrybutyOSpecyfikatorzeDostepu(wPublic);
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        pom = struktura->getOperacjeOSpecyfikatorzeDostepu(wPublic);
+        pom = dekodujBlokOperacji(pom);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+//        zwracana += "\nprotected:\n";
+//        pom = klasa->getAtrybutyOSpecyfikatorzeDostepu(wProtected);
+//        pom = dekodujBlokAtrybutow(pom,true);
+//        zwracana += pom;
+
+//        pom = klasa->getOperacjeOSpecyfikatorzeDostepu(wProtected);
+//        pom = dekodujBlokOperacji(pom);
+//        ListaPom.clear();
+//        ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+//        for(int i = 0; i < ListaPom.size(); i++)
+//        {
+//            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+//        }
+
+        zwracana += "\nPrivate:\n";
+        pom = struktura->getAtrybutyOSpecyfikatorzeDostepu(wPrivate);
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        pom = struktura->getOperacjeOSpecyfikatorzeDostepu(wPrivate);
+        pom = dekodujBlokOperacji(pom);
+        ListaPom.clear();
+        ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+        }
+
+        zwracana += "\n};\n";
+
+
+    }else
+    {
+        //ZGłOŚ BŁĄD
+    }
+
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Unia* unia)
+{
+    QString zwracana = "";
+    if(unia != NULL)
+    {
+        QString pom = "";
+        zwracana += "union " + unia->getNazwa() + "\n{\n" ;
+
+
+        pom = unia->getWszystkieAtrybuty();
+        pom = dekodujBlokAtrybutow(pom,true);
+        zwracana += pom;
+
+        zwracana += "\n}\n";
+
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Wyliczenie* wyliczenie)
+{
+    QString zwracana = "";
+    if(wyliczenie != NULL)
+    {
+        QString pom = "";
+        zwracana += "enum " + wyliczenie->getNazwa() + "\n{\n" ;
+
+
+        pom = wyliczenie->getWszystkieAtrybuty();
+        QStringList lista = pom.split("\n",QString::SkipEmptyParts);
+        pom = lista.join(",\n");
+
+        zwracana += pom;
+
+        zwracana += "\n}\n";
+
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+    return zwracana;
+}
+
+
+
