@@ -229,7 +229,7 @@ public:
 class Unia: public Element
 {
 public:
-    QString dajInfoDlaKodera();
+    QString dajInfoDlaKodera(){return "Union";}
     Unia(QString nazwa = ""):Element(nazwa)
     {
         IleElementow++;
@@ -243,7 +243,7 @@ public:
 class Wyliczenie: public Element
 {
 public:
-    QString dajInfoDlaKodera();
+    QString dajInfoDlaKodera(){return "Element";}
     Wyliczenie(QString nazwa = ""):Element(nazwa)
     {
         IleElementow++;

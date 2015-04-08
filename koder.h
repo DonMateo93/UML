@@ -3,23 +3,30 @@
 #include <C:\Users\avans\Documents\UML\relacja.h>
 #include <C:\Users\avans\Documents\UML\element.h>
 #include <QVector>
+#include <QList>
 
 
 class Koder
 {
 protected:
 //    virtual void sprawdzPlik();
-    QVector<Relacja*> WektorRelacji;
-    QVector<Element*> WektorElementow;
+    QList<Relacja*> ListaRelacji;
+    QList<Element*> ListaElementow;
     QString RodzajStosowanegoKontenera;
+    bool CzyKontrolowacLogikePoloczen;
 
 public:
+    Koder(bool czyKontrolowac = false):CzyKontrolowacLogikePoloczen(czyKontrolowac){}
+    ~Koder(){}
     virtual void poprawKodWPliku(const QString& PathAndName) = 0;
     virtual void wprowadzElementDoPliku(QString FilePath, PrzestrzenNazw* przestrzen, PrzestrzenNazw* doJakiej = NULL) = 0;
     virtual void wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, PrzestrzenNazw* DoJakiej = NULL) = 0;
     virtual void wprowadzElementDoPliku(QString FilePathAndName, Struktura* struktura, PrzestrzenNazw* DoJakiej = NULL) = 0;
     virtual void wprowadzElementDoPliku(QString FilePathAndName, Wyliczenie* wyliczenie, PrzestrzenNazw* DoJakiej = NULL) = 0;
     virtual void wprowadzElementDoPliku(QString FilePathAndName, Unia* unia, PrzestrzenNazw* DoJakiej = NULL) = 0;
+    virtual void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName) = 0;
+    virtual void dodajRelacje(Relacja* relacja) = 0;
+    void dodajElementDoListy(Element* element);
     virtual QString dekodujAtrybut(const Atrybut& atrybut) = 0;
     virtual QString dekodujOperacje(const Operacja& operacja) = 0;
     virtual QString dekodujBlokOperacji(const QString& BlokOperacji) = 0;
@@ -29,16 +36,13 @@ public:
     virtual QString przygotujBlokTekstuDoWpisaniaElementu(Struktura* struktura) = 0;
     virtual QString przygotujBlokTekstuDoWpisaniaElementu(Unia* unia) = 0;
     virtual QString przygotujBlokTekstuDoWpisaniaElementu(Wyliczenie* wyliczenie) = 0;
-
-    Koder();
-    ~Koder();
 };
 
 class KoderCpp: public Koder
 {
-//    void sprawdzPlik();
 
 public:
+    KoderCpp(bool czyKontrolowac = false):Koder(czyKontrolowac){}
     void poprawKodWPliku(const QString& PathAndName);
     void wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw *Przestrzen, PrzestrzenNazw *DoJakiej = NULL);
     void wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, PrzestrzenNazw* DoJakiej = NULL);
@@ -46,6 +50,8 @@ public:
     void wprowadzElementDoPliku(QString FilePathAndName, Wyliczenie* wyliczenie, PrzestrzenNazw* DoJakiej = NULL);
     void wprowadzElementDoPliku(QString FilePathAndName, Unia* unia, PrzestrzenNazw* DoJakiej = NULL);
     void generujKodDoPliku(QString path);
+    void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName);
+    void dodajRelacje(Relacja* relacja);
     QString dekodujAtrybut(const QString& atrybut);
     QString dekodujAtrybut(const Atrybut& atrybut);
     QString dekodujOperacje(const Operacja& operacja);
