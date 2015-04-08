@@ -20,6 +20,13 @@ public:
     ~Relacja();
     bool CzyJestElement();
     virtual void draw() = 0;
+    QString getNameDrugi(){return Drugi->getNazwa();}
+    QString getNamePierwszy(){return Pierwszy->getNazwa();}
+    bool czyZgadzaSieAdresZElementemPierwszym(Element* element);
+    bool czyZgadzaSieAdresZElementemDrugim(Element* element);
+    bool czyPierwszyToPrzestrzen();
+    Element* dajAdresPierwszy(){return Pierwszy;}
+    Element* dajAdresDrugi(){return Drugi;}
 };
 
 class Dependency: public Relacja
@@ -28,7 +35,7 @@ class Dependency: public Relacja
 public:
     Dependency(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = ""):Relacja(pierwszy,drugi,wid,koment)
     {}
-    void draw();
+    void draw(){}
 };
 
 class Composition: public Relacja
@@ -37,7 +44,7 @@ class Composition: public Relacja
 public:
     Composition(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
     {}
-    void draw();
+    void draw(){}
 };
 
 class Aggregation: public Relacja
@@ -46,7 +53,7 @@ class Aggregation: public Relacja
 public:
     Aggregation(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
     {}
-    void draw();
+    void draw(){}
 };
 
 class Generalization: public Relacja
@@ -54,7 +61,7 @@ class Generalization: public Relacja
 public:
     Generalization(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = ""):Relacja(pierwszy,drugi,wid,koment)
     {}
-    void draw();
+    void draw(){}
 };
 
 class Association: public Relacja
@@ -63,7 +70,7 @@ class Association: public Relacja
 public:
     Association(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
     {}
-    void draw();
+    void draw(){}
 };
 
 #endif // RELACJA_H

@@ -67,6 +67,9 @@ MainWindow::MainWindow(QWidget *parent) :
     Klasa* klasa2 = new Klasa("gosia");
     Klasa* klasa3 = new Klasa("ada");
     Wyliczenie* wyliczenie2 = new Wyliczenie("licz");
+    Relacja* relacja1 = new Aggregation(przestrzen,przestrzen2);
+    Relacja* relacja2 = new Composition(przestrzen2,klasa1);
+    Relacja* relacja3 = new Aggregation(przestrzen,klasa2);
 
     przestrzen->dodajOperacje(operacja);
     przestrzen->dodajOperacje(operacja2);
@@ -133,6 +136,10 @@ MainWindow::MainWindow(QWidget *parent) :
     kod->dodajElementDoListy(struktura1);
     kod->dodajElementDoListy(struktura2);
     kod->dodajElementDoListy(struktura3);
+    kod->dodajRelacje(relacja1);
+    kod->dodajRelacje(relacja2);
+    kod->dodajRelacje(relacja3);
+
 
     kod->wprowadzDoPlikuWszystkieElementy(nazwapliku);
     kod->poprawKodWPliku(nazwapliku);

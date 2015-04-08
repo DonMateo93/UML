@@ -1260,12 +1260,32 @@ void KoderCpp::wprowadzDoPlikuWszystkieElementy(QString FilePathAndName)
     //FUNKCJA JEST NIE SKOŃCZONA, NALEŻY DODAĆ PRZESZUKIWANIE RELACJI W CELU ZNALEZIENIA
     //KOINCYDENCJI Z JAKIMIŚ PRZESTRZENIAMI NAZW
 
+    //Przeszukiwanie przestrzeni nazw nie znajdujących się w innych przestrzeniach nazw
+    PrzestrzenNazw* nadrzedna = NULL;
     for(int i = 0; i < ListaElementow.size(); i++)
     {
         PrzestrzenNazw* przestrzen = dynamic_cast<PrzestrzenNazw*>(ListaElementow[i]);
         if(przestrzen)
         {
-            wprowadzElementDoPliku(FilePathAndName, przestrzen);
+            if(dajAdresNadrzednejPrzestrzeni(przestrzen) == NULL)
+            {
+                wprowadzElementDoPliku(FilePathAndName, przestrzen);
+            }
+        }
+    }
+
+    for(int k = 0; k < ListaElementow.size(); k ++)
+    {
+        PrzestrzenNazw* przestrzen = dynamic_cast<PrzestrzenNazw*>(ListaElementow[k]);
+
+        if(przestrzen)
+        {
+            nadrzedna = dajAdresNadrzednejPrzestrzeni(przestrzen);
+
+            if(nadrzedna != NULL)
+            {
+               wprowadzElementDoPliku(FilePathAndName,przestrzen,nadrzedna);
+            }
         }
     }
 
@@ -1274,22 +1294,26 @@ void KoderCpp::wprowadzDoPlikuWszystkieElementy(QString FilePathAndName)
         if(dynamic_cast<Klasa*>(ListaElementow[j]))
         {
             Klasa* klasa = dynamic_cast<Klasa*>(ListaElementow[j]);
-            wprowadzElementDoPliku(FilePathAndName,klasa);
+            nadrzedna = dajAdresNadrzednejPrzestrzeni(klasa);
+            wprowadzElementDoPliku(FilePathAndName,klasa,nadrzedna);
 
         }else if(dynamic_cast<Struktura*>(ListaElementow[j]))
         {
             Struktura* klasa = dynamic_cast<Struktura*>(ListaElementow[j]);
-            wprowadzElementDoPliku(FilePathAndName,klasa);
+            nadrzedna = dajAdresNadrzednejPrzestrzeni(klasa);
+            wprowadzElementDoPliku(FilePathAndName,klasa,nadrzedna);
 
         }else if(dynamic_cast<Wyliczenie*>(ListaElementow[j]))
         {
             Wyliczenie* klasa = dynamic_cast<Wyliczenie*>(ListaElementow[j]);
-            wprowadzElementDoPliku(FilePathAndName,klasa);
+            nadrzedna = dajAdresNadrzednejPrzestrzeni(klasa);
+            wprowadzElementDoPliku(FilePathAndName,klasa,nadrzedna);
 
         }else if(dynamic_cast<Unia*>(ListaElementow[j]))
         {
             Unia* klasa = dynamic_cast<Unia*>(ListaElementow[j]);
-            wprowadzElementDoPliku(FilePathAndName,klasa);
+            nadrzedna = dajAdresNadrzednejPrzestrzeni(klasa);
+            wprowadzElementDoPliku(FilePathAndName,klasa,nadrzedna);
         }
     }
 }
@@ -1324,7 +1348,31 @@ void KoderCpp::dodajRelacje(Relacja *relacja)
 }
 
 
+PrzestrzenNazw* KoderCpp::dajAdresNadrzednejPrzestrzeni(Element* element)
+{
+    PrzestrzenNazw* zwrot = NULL;
 
+    if(element != NULL)
+    {
+        //BARDZO WAŻNE!!!! SPRAWDZIĆ CZY KONCEPCJA ADRESÓW DZIAŁA
+        for(int i = 0; i < ListaRelacji.size(); i++)
+        {
+            if(dynamic_cast<Aggregation*>(ListaRelacji[i]) || dynamic_cast<Composition*>(ListaRelacji[i]))
+            {
+                if(ListaRelacji[i]->czyZgadzaSieAdresZElementemDrugim(element))
+                {
+                    if(ListaRelacji[i]->czyPierwszyToPrzestrzen())
+                    {
+                        zwrot = dynamic_cast<PrzestrzenNazw*>(ListaRelacji[i]->dajAdresPierwszy());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return zwrot;
+}
 
 
 

@@ -27,6 +27,7 @@ public:
     virtual void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName) = 0;
     virtual void dodajRelacje(Relacja* relacja) = 0;
     void dodajElementDoListy(Element* element);
+    virtual PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element* element) = 0;
     virtual QString dekodujAtrybut(const Atrybut& atrybut) = 0;
     virtual QString dekodujOperacje(const Operacja& operacja) = 0;
     virtual QString dekodujBlokOperacji(const QString& BlokOperacji) = 0;
@@ -52,6 +53,7 @@ public:
     void generujKodDoPliku(QString path);
     void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName);
     void dodajRelacje(Relacja* relacja);
+    PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element *element);
     QString dekodujAtrybut(const QString& atrybut);
     QString dekodujAtrybut(const Atrybut& atrybut);
     QString dekodujOperacje(const Operacja& operacja);
