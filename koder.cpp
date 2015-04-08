@@ -92,7 +92,7 @@ void KoderCpp::generujKodDoPliku(QString path = "")
 
 }
 
-QString KoderCpp::dekodujOperacje(const Operacja& operacja)
+QString KoderCpp::dekodujOperacje(const Operacja& operacja, QString przedrostekDoCpp)
 {
     QString zakodowany;
     QString zdekodowany = "";
@@ -164,10 +164,13 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
         }
 
         if(list[0] == "#" || list[0] == "~" || list[0] == "+" || list[0] == "-" )
-            zdekodowany = zdekodowany + list[1];
+        {
+            zdekodowany =zdekodowany + przedrostekDoCpp + list[1] ;
+        }
         else
-            zdekodowany = zdekodowany + list[0];
-
+        {
+            zdekodowany = zdekodowany + przedrostekDoCpp + list[0];
+        }
         ind1 = list.indexOf("(");
         int ind2 = list.indexOf(")");
 
@@ -205,7 +208,7 @@ QString KoderCpp::dekodujOperacje(const Operacja& operacja)
     return zdekodowany;
 }
 
-QString KoderCpp::dekodujOperacje(const QString& operacja)
+QString KoderCpp::dekodujOperacje(const QString& operacja, QString przedrostekDoCpp)
 {
     QString zakodowany = "";
     QString zdekodowany = "";
@@ -276,9 +279,9 @@ QString KoderCpp::dekodujOperacje(const QString& operacja)
         }
 
         if(list[0] == "#" || list[0] == "~" || list[0] == "+" || list[0] == "-" )
-            zdekodowany = zdekodowany + list[1];
+            zdekodowany =zdekodowany + przedrostekDoCpp + list[1];
         else
-            zdekodowany = zdekodowany + list[0];
+            zdekodowany =zdekodowany + przedrostekDoCpp + list[0];
 
         ind1 = list.indexOf("(");
         int ind2 = list.indexOf(")");
@@ -406,35 +409,28 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* P
     QFile Plik(FilePathAndName);
     QString pom;
 
+    FilePathAndName.chop(2);
+    FilePathAndName += ".cpp";
+    QFile PlikZrodlo(FilePathAndName);
+
     if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
     {
-        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
         {
             QTextStream stream(&Plik);
+            QTextStream stream2(&PlikZrodlo);
 
             QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(Przestrzen);
             stream << wszystko;
 
-//            stream << "namespace " + Przestrzen->getNazwa() + "\n{\n" ;
+            QString przedrostek = Przestrzen->getNazwa() + "::";
+            QString wszystkoCpp = przygotujBlokTekstuDoCpp(Przestrzen, przedrostek);
+            stream2 << wszystkoCpp;
 
 
-//            pom = Przestrzen->getWszystkieAtrybuty();
-//            pom = dekodujBlokAtrybutow(pom,true);
-//            stream << pom;
-
-
-//            pom = Przestrzen->getWszystkieOperacje();
-//            pom = dekodujBlokOperacji(pom);
-//            QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
-
-//            for(int i = 0; i < ListaPom.size(); i++)
-//            {
-//                stream<<(ListaPom[i] + "\n{\n\n}\n");
-//            }
-
-//            stream << "\n}\n";
 
             Plik.close();
+            PlikZrodlo.close();
 
         }else
         {
@@ -470,18 +466,24 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, PrzestrzenNazw* P
             Plik.close();
             PlikPom.close();
 
-            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
             {
                 //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
                 QTextStream in(&PlikPom);
                 QTextStream out(&Plik);
+                QTextStream stream2(&PlikZrodlo);
 
                 QString buffor = in.readAll();
                 out << buffor;
 
+                QString przedrostek = DoJakiej->getNazwa() + "::" + Przestrzen->getNazwa() + "::";
+                QString wszystkoCpp = przygotujBlokTekstuDoCpp(Przestrzen, przedrostek);
+                stream2 << wszystkoCpp;
+
                 Plik.close();
                 PlikPom.close();
                 PlikPom.remove();
+                PlikZrodlo.close();
 
             }else
             {
@@ -505,16 +507,26 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Struktura* strukt
     QFile Plik(FilePathAndName);
     QString pom;
 
+    FilePathAndName.chop(2);
+    FilePathAndName += ".cpp";
+    QFile PlikZrodlo(FilePathAndName);
+
     if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
     {
-        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
         {
             QTextStream stream(&Plik);
+            QTextStream stream2(&PlikZrodlo);
 
             QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(struktura);
             stream << wszystko;
 
+            QString przedrostek = struktura->getNazwa() + "::";
+            QString wszystkoCpp = przygotujBlokTekstuDoCpp(struktura, przedrostek);
+            stream2 << wszystkoCpp;
+
             Plik.close();
+            PlikZrodlo.close();
 
         }else
         {
@@ -550,18 +562,24 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Struktura* strukt
             Plik.close();
             PlikPom.close();
 
-            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
             {
                 //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
                 QTextStream in(&PlikPom);
                 QTextStream out(&Plik);
+                QTextStream stream2(&PlikZrodlo);
 
                 QString buffor = in.readAll();
                 out << buffor;
 
+                QString przedrostek = DoJakiej->getNazwa() + "::" + struktura->getNazwa() + "::";
+                QString wszystkoCpp = przygotujBlokTekstuDoCpp(struktura, przedrostek);
+                stream2 << wszystkoCpp;
+
                 Plik.close();
                 PlikPom.close();
                 PlikPom.remove();
+                PlikZrodlo.close();
 
             }else
             {
@@ -746,16 +764,26 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, Prz
     QFile Plik(FilePathAndName);
     QString pom;
 
+    FilePathAndName.chop(2);
+    FilePathAndName += ".cpp";
+    QFile PlikZrodlo(FilePathAndName);
+
     if(DoJakiej == NULL) // MOŻNA WPISAC NA KONIEC PLIKU NOWY NAMESPACE
     {
-        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
+        if(Plik.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
         {
             QTextStream stream(&Plik);
+            QTextStream stream2(&PlikZrodlo);
 
             QString wszystko = przygotujBlokTekstuDoWpisaniaElementu(klasa);
             stream << wszystko;
 
+            QString przedrostek = klasa->getNazwa() + "::";
+            QString wszystkoCpp = przygotujBlokTekstuDoCpp(klasa, przedrostek);
+            stream2 << wszystkoCpp;
+
             Plik.close();
+            PlikZrodlo.close();
 
         }else
         {
@@ -791,18 +819,24 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, Prz
             Plik.close();
             PlikPom.close();
 
-            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text))
+            if(Plik.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) && PlikPom.open(QIODevice::ReadOnly | QIODevice::Text) && PlikZrodlo.open(QIODevice::WriteOnly|QIODevice::Append| QIODevice::Text))
             {
                 //PRZEPISANIE WSZYSTKICH DANYCH DO WŁAŚCIWEGO PLIKU
                 QTextStream in(&PlikPom);
                 QTextStream out(&Plik);
+                QTextStream stream2(&PlikZrodlo);
 
                 QString buffor = in.readAll();
                 out << buffor;
 
+                QString przedrostek = DoJakiej->getNazwa() + "::" + klasa->getNazwa() + "::";
+                QString wszystkoCpp = przygotujBlokTekstuDoCpp(klasa, przedrostek);
+                stream2 << wszystkoCpp;
+
                 Plik.close();
                 PlikPom.close();
                 PlikPom.remove();
+                PlikZrodlo.close();
 
             }else
             {
@@ -821,7 +855,7 @@ void KoderCpp::wprowadzElementDoPliku(QString FilePathAndName, Klasa* klasa, Prz
     }}
 
 
-QString KoderCpp::dekodujBlokOperacji(const QString& BlokOperacji)
+QString KoderCpp::dekodujBlokOperacji(const QString& BlokOperacji, QString przedrostekDoCpp)
 {
     QString ZdekodowanyBlok = "";
 
@@ -831,7 +865,7 @@ QString KoderCpp::dekodujBlokOperacji(const QString& BlokOperacji)
 
         for(int i = 0; i< ListaOperacji.size(); i++)
         {
-            ListaOperacji[i] = dekodujOperacje(ListaOperacji[i]);
+            ListaOperacji[i] = dekodujOperacje(ListaOperacji[i], przedrostekDoCpp);
         }
 
         ZdekodowanyBlok = ListaOperacji.join("\n");
@@ -1012,7 +1046,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(PrzestrzenNazw* Przestrz
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n"); //USUNIĘTO \n{\n\n}
         }
 
         zwracana += "\n}\n";
@@ -1045,7 +1079,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Klasa* klasa)
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n");
         }
 
         //----------------------------------------------------------------------------
@@ -1066,7 +1100,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Klasa* klasa)
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n");
         }
 
         //----------------------------------------------------------------------------
@@ -1102,7 +1136,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Klasa* klasa)
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n");
         }
 
        //----------------------------------------------------------------------------
@@ -1154,7 +1188,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Struktura* struktura)
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n");
         }
 
         //--------------------------------------------
@@ -1175,7 +1209,7 @@ QString KoderCpp::przygotujBlokTekstuDoWpisaniaElementu(Struktura* struktura)
 
         for(int i = 0; i < ListaPom.size(); i++)
         {
-            zwracana += (ListaPom[i] + "\n{\n\n}\n");
+            zwracana += (ListaPom[i] + ";\n");
         }
 
         //--------------------------------------------
@@ -1374,7 +1408,85 @@ PrzestrzenNazw* KoderCpp::dajAdresNadrzednejPrzestrzeni(Element* element)
     return zwrot;
 }
 
+QString KoderCpp::przygotujBlokTekstuDoCpp(PrzestrzenNazw* przestrzen, QString przedrostekDoCpp)
+{
+    QString zwracana = "";
+    if(przestrzen != NULL)
+    {
+        QString pom = "";
 
+
+        pom = przestrzen->getWszystkieOperacje();
+        pom = dekodujBlokOperacji(pom, przedrostekDoCpp);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n\n");
+        }
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoCpp(Klasa* klasa, QString przedrostekDoCpp)
+{
+    QString zwracana = "";
+    if(klasa != NULL)
+    {
+        QString pom = "";
+
+
+        pom = klasa->getWszystkieOperacje();
+        pom = dekodujBlokOperacji(pom, przedrostekDoCpp);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n\n");
+        }
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+
+    return zwracana;
+}
+
+QString KoderCpp::przygotujBlokTekstuDoCpp(Struktura* struktura, QString przedrostekDoCpp)
+{
+    QString zwracana = "";
+    if(struktura != NULL)
+    {
+        QString pom = "";
+
+
+        pom = struktura->getWszystkieOperacje();
+        pom = dekodujBlokOperacji(pom, przedrostekDoCpp);
+        QStringList ListaPom = pom.split("\n", QString::SkipEmptyParts);
+
+        for(int i = 0; i < ListaPom.size(); i++)
+        {
+            zwracana += (ListaPom[i] + "\n{\n\n}\n\n");
+        }
+
+    }else
+    {
+        //ZGŁOŚ BŁĄD
+    }
+
+    return zwracana;
+}
+
+void KoderCpp::wprowadzDoPlikuWszyskieRelacje(QString FilePathAndName)
+{
+
+}
 
 
 
