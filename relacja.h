@@ -27,6 +27,7 @@ public:
     bool czyPierwszyToPrzestrzen();
     Element* dajAdresPierwszy(){return Pierwszy;}
     Element* dajAdresDrugi(){return Drugi;}
+    Widocznosc getWidoczność(){return widocznosc;}
 };
 
 class Dependency: public Relacja
@@ -41,8 +42,9 @@ public:
 class Composition: public Relacja
 {
     Krotnosc Ile;
+    int n;
 public:
-    Composition(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
+    Composition(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
     void draw(){}
 };
@@ -50,8 +52,9 @@ public:
 class Aggregation: public Relacja
 {
     Krotnosc Ile;
+    int n;
 public:
-    Aggregation(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
+    Aggregation(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
     void draw(){}
 };
@@ -67,8 +70,9 @@ public:
 class Association: public Relacja
 {
     Krotnosc Ile;
+    int n;
 public:
-    Association(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden):Relacja(pierwszy,drugi,wid,koment),Ile(ile)
+    Association(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
     void draw(){}
 };

@@ -14,9 +14,10 @@ protected:
     QList<Element*> ListaElementow;
     QString RodzajStosowanegoKontenera;
     bool CzyKontrolowacLogikePoloczen;
+    int ileObiektow;
 
 public:
-    Koder(bool czyKontrolowac = false):CzyKontrolowacLogikePoloczen(czyKontrolowac){}
+    Koder(bool czyKontrolowac = false):CzyKontrolowacLogikePoloczen(czyKontrolowac),ileObiektow(0){}
     ~Koder(){}
     virtual void poprawKodWPliku(const QString& PathAndName) = 0;
     virtual void wprowadzElementDoPliku(QString FilePath, PrzestrzenNazw* przestrzen, PrzestrzenNazw* doJakiej = NULL) = 0;
@@ -27,6 +28,7 @@ public:
     virtual void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName) = 0;
     virtual void wprowadzDoPlikuWszyskieRelacje(QString FilePathAndName) = 0;
     virtual void dodajRelacje(Relacja* relacja) = 0;
+    virtual void wprowadzDoPlikuAgregacjeLubKompozycje(QString FilePathAndName, Relacja* relacja) = 0;
     void dodajElementDoListy(Element* element);
     virtual PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element* element) = 0;
     virtual QString dekodujAtrybut(const Atrybut& atrybut) = 0;
@@ -58,6 +60,7 @@ public:
     void wprowadzDoPlikuWszystkieElementy(QString FilePathAndName);
     void wprowadzDoPlikuWszyskieRelacje(QString FilePathAndName);
     void dodajRelacje(Relacja* relacja);
+    void wprowadzDoPlikuAgregacjeLubKompozycje(QString FilePathAndName, Relacja* relacja);
     PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element *element);
     QString dekodujAtrybut(const QString& atrybut);
     QString dekodujAtrybut(const Atrybut& atrybut);

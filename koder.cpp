@@ -1295,6 +1295,7 @@ void KoderCpp::wprowadzDoPlikuWszystkieElementy(QString FilePathAndName)
     //KOINCYDENCJI Z JAKIMIŚ PRZESTRZENIAMI NAZW
 
     //Przeszukiwanie przestrzeni nazw nie znajdujących się w innych przestrzeniach nazw
+    ileObiektow = 0;
     PrzestrzenNazw* nadrzedna = NULL;
     for(int i = 0; i < ListaElementow.size(); i++)
     {
@@ -1485,6 +1486,243 @@ QString KoderCpp::przygotujBlokTekstuDoCpp(Struktura* struktura, QString przedro
 
 void KoderCpp::wprowadzDoPlikuWszyskieRelacje(QString FilePathAndName)
 {
+    for(int i = 0; i < ListaRelacji.size(); i ++)
+    {
+        if(dynamic_cast<Aggregation*>(ListaRelacji[i]))
+        {
+
+        }else if(dynamic_cast<Composition*>(ListaRelacji[i]))
+        {
+
+        }else if(dynamic_cast<Association*>(ListaRelacji[i]))
+        {
+
+        }else if(dynamic_cast<Dependency*>(ListaRelacji[i]))
+        {
+
+        }else if(dynamic_cast<Generalization*>(ListaRelacji[i]))
+        {
+
+        }
+    }
+}
+
+void KoderCpp::wprowadzDoPlikuAgregacjeLubKompozycje(QString FilePathAndName, Relacja* relacja)
+{
+    QFile Naglowek(FilePathAndName);
+    QFile Pom("PlikPomocniczy.txt");
+    QString pomoc1 = "";
+    QString szukana = "";
+    QString wpisywana = relacja->dajAdresDrugi()->getNazwa() + " element" + QString::number(ileObiektow++) + ";";
+
+    if(dynamic_cast<Klasa*>(relacja->dajAdresPierwszy()))
+    {
+        szukana = "class " + relacja->dajAdresPierwszy()->getNazwa();
+    }
+    else if(dynamic_cast<Struktura*>(relacja->dajAdresPierwszy()))
+    {
+        szukana = "struct " + relacja->dajAdresPierwszy()->getNazwa();
+    }
+    else if(dynamic_cast<Unia*>(relacja->dajAdresPierwszy()))
+    {
+        szukana = "union " + relacja->dajAdresPierwszy()->getNazwa();
+    }
+
+    if(szukana != "")
+    {
+        if(Naglowek.open(QIODevice::Text | QIODevice::ReadOnly) && Pom.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream str1(&Naglowek), str2(&Pom);
+            pomoc1 = str1.readLine();
+            while(!pomoc1.isNull())
+            {
+                str2 << pomoc1;
+                if(pomoc1.contains(szukana))
+                {
+                    pomoc1 = str1.readLine();
+
+                    if(pomoc1.contains("{"))
+                    {
+                        switch(relacja->getWidoczność()) // Rozdzial na przypadki widocznosci
+                        {
+                        case wPrivate:
+                            if(szukana.contains("class"))
+                            {
+                                str2 << pomoc1;
+                                str2 << wpisywana;
+                            }
+                            else if(szukana.contains("struct")) // skladowa prywatna nie jest na poczatku klasy
+                            {
+                                bool ok1 = false;
+                                int wagaNawiasy = 0;
+                                QStringList lista;
+                                lista.clear();
+                                do
+                                {
+                                    lista.push_back(pomoc1);
+
+                                    //Pobieramy do buforowej listy dopoki nie pobierzemy calego ciala
+                                    if(pomoc1.contains("{"))
+                                    {
+                                        wagaNawiasy++;
+                                    }
+                                    else if(pomoc1.contains("}"))
+                                    {
+                                        wagaNawiasy--;
+                                    }
+
+                                    if(pomoc1.contains("private"))
+                                    {
+                                        lista.push_back(wpisywana);
+                                        ok1 = true;
+                                        break;
+                                    }
+
+                                    pomoc1 = str1.readLine();
+
+                                }while(wagaNawiasy > 0);
+
+                                if(!ok1)
+                                {
+                                    lista.push_back("private:");
+                                    lista.push_back(wpisywana);
+                                }
+
+                                QString sklej = lista.join('\n');
+                                str2 << sklej;
+                            }
+                            break;
+                        case wPublic:
+                            if(szukana.contains("class"))
+                            {
+                                bool ok1 = false;
+                                int wagaNawiasy = 0;
+                                QStringList lista;
+                                lista.clear();
+                                do
+                                {
+                                    lista.push_back(pomoc1);
+
+                                    //Pobieramy do buforowej listy dopoki nie pobierzemy calego ciala
+                                    if(pomoc1.contains("{"))
+                                    {
+                                        wagaNawiasy++;
+                                    }
+                                    else if(pomoc1.contains("}"))
+                                    {
+                                        wagaNawiasy--;
+                                    }
+
+                                    if(pomoc1.contains("public"))
+                                    {
+                                        lista.push_back(wpisywana);
+                                        ok1 = true;
+                                        break;
+                                    }
+
+                                    pomoc1 = str1.readLine();
+
+                                }while(wagaNawiasy > 0);
+
+                                if(!ok1)
+                                {
+                                    lista.push_back("public:");
+                                    lista.push_back(wpisywana);
+                                }
+
+                                QString sklej = lista.join('\n');
+                                str2 << sklej;
+                            }
+                            else if(szukana.contains("struct"))
+                            {
+                                str2 << pomoc1;
+                                str2 << wpisywana;
+                            }
+                            break;
+                        case wProtected:
+                            if(szukana.contains("class") || szukana.contains("struct"))
+                            {
+                                bool ok1 = false;
+                                int wagaNawiasy = 0;
+                                QStringList lista;
+                                lista.clear();
+                                do
+                                {
+                                    lista.push_back(pomoc1);
+
+                                    //Pobieramy do buforowej listy dopoki nie pobierzemy calego ciala
+                                    if(pomoc1.contains("{"))
+                                    {
+                                        wagaNawiasy++;
+                                    }
+                                    else if(pomoc1.contains("}"))
+                                    {
+                                        wagaNawiasy--;
+                                    }
+
+                                    if(pomoc1.contains("protected"))
+                                    {
+                                        lista.push_back(wpisywana);
+                                        ok1 = true;
+                                        break;
+                                    }
+
+                                    pomoc1 = str1.readLine();
+
+                                }while(wagaNawiasy > 0);
+
+                                if(!ok1)
+                                {
+                                    lista.push_back("protected:");
+                                    lista.push_back(wpisywana);
+                                }
+
+                                QString sklej = lista.join('\n');
+                                str2 << sklej;
+                            }
+                            break;
+                        case ND: //Tu siłą rzeczy może być tylko unia
+                            if(szukana.contains("union"))
+                            {
+                                str2 << pomoc1;
+                                str2 << wpisywana;
+                            }
+                            break;
+                        }
+                    }
+
+                }
+                pomoc1 = str1.readLine();
+            }
+        }else
+        {
+            //OBSŁUGA BŁĘDU
+        }
+
+        Naglowek.close();
+        Pom.close();
+
+        if(Naglowek.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate) && Pom.open(QIODevice::Text | QIODevice::ReadOnly))
+        {
+            QTextStream str1(&Naglowek), str2(&Pom);
+
+            pomoc1 = str2.readLine();
+            while(!pomoc1.isNull())
+            {
+                str1 << pomoc1;
+                pomoc1 = str2.readLine();
+            }
+
+            Pom.close();
+            Naglowek.close();
+            Pom.remove();
+        }
+        else
+        {
+            //OBSŁUGA BŁĘDU = PROBLEM Z PLIKAMI
+        }
+    }
+
 
 }
 
