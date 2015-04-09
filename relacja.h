@@ -46,6 +46,8 @@ class Composition: public Relacja
 public:
     Composition(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
+    Krotnosc getKrotnosc(){return Ile;}
+    int getIleTychN(){return n;}
     void draw(){}
 };
 
@@ -56,6 +58,8 @@ class Aggregation: public Relacja
 public:
     Aggregation(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
+    Krotnosc getKrotnosc(){return Ile;}
+    int getIleTychN(){return n;}
     void draw(){}
 };
 
@@ -74,6 +78,8 @@ class Association: public Relacja
 public:
     Association(Element* pierwszy, Element* drugi, Widocznosc wid= wPrivate, QString koment = "",Krotnosc ile = Jeden, int ileTychN = 0):Relacja(pierwszy,drugi,wid,koment),Ile(ile),n(ileTychN)
     {}
+    Krotnosc getKrotnosc(){return Ile;}
+    int getIleTychN(){return n;}
     void draw(){}
 };
 
