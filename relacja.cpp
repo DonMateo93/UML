@@ -38,3 +38,51 @@ bool Relacja::czyPierwszyToPrzestrzen()
     }
 }
 
+bool Relacja::czyPierwszyToKlasa()
+{
+    if(dynamic_cast<Klasa*>(Pierwszy))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+bool Relacja::czyDrugiToKlasa()
+{
+    if(dynamic_cast<Klasa*>(Drugi))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Relacja::czyPierwszyToStruktura()
+{
+    if(dynamic_cast<Struktura*>(Drugi))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Relacja::czyDrugiToStruktura()
+{
+    if(dynamic_cast<Struktura*>(Drugi))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}

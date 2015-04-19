@@ -1511,11 +1511,17 @@ void KoderCpp::wprowadzDoPlikuWszyskieRelacje(QString FilePathAndName)
         }
         else if(dynamic_cast<Dependency*>(ListaRelacji[i]))
         {
-
+            if((ListaRelacji[i]->czyPierwszyToKlasa() || ListaRelacji[i]->czyPierwszyToStruktura()) && (ListaRelacji[i]->czyDrugiToKlasa() || ListaRelacji[i]->czyDrugiToStruktura()))
+            {
+                wprowadzDoPlikuDependency(FilePathAndName,ListaRelacji[i]);
+            }
         }
         else if(dynamic_cast<Generalization*>(ListaRelacji[i]))
         {
-
+            if(ListaRelacji[i]->czyPierwszyToKlasa() && ListaRelacji[i]->czyDrugiToKlasa())
+            {
+                wprowadzDoPlikuGeneralizacje(FilePathAndName,ListaRelacji[i]);
+            }
         }
     }
 }
@@ -1997,9 +2003,92 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
     }
 }
 
+void KoderCpp::wprowadzDoPlikuGeneralizacje(QString FilePathAndName, Relacja* relacja)
+{
+    QFile Zrodlo(FilePathAndName);
+    QFile Pom("PlikPomocniczy.txt");
 
+    if(relacja != NULL)
+    {
+        if(Zrodlo.open(QIODevice::Text | QIODevice::ReadOnly) && Pom.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream str1(&Zrodlo), str2(&Pom);
+            QString wstawiana;
+            QString bufor1;
+            QString szukana = "class " + relacja->dajAdresDrugi()->getNazwa();
 
+            switch(relacja->getWidoczność())
+            {
+            case wPublic:
+                wstawiana = "public " + relacja->dajAdresPierwszy()->getNazwa();
+                break;
+            case wPrivate:
+                wstawiana = "public " + relacja->dajAdresPierwszy()->getNazwa();
+                break;
+            case wProtected:
+                wstawiana = "public " + relacja->dajAdresPierwszy()->getNazwa();
+                break;
+            }
 
+            bufor1 = str1.readLine();
+
+            while(!bufor1.isNull())
+            {
+                if(bufor1.contains(szukana))
+                {
+                    QString bufor2 = str1.readLine();
+                    if(bufor2.contains("{"))
+                    {
+                        if(bufor1.contains(":"))
+                        {
+                            bufor1 += "," + wstawiana;
+                        }
+                        else
+                        {
+                            bufor1 += ":" + wstawiana;
+                        }
+                        str2 << bufor1;
+                        str2 << bufor2;
+                        bufor1 = str1.readLine();
+                    }
+
+                    str2 << bufor1;
+                    bufor1 = str1.readLine();
+                }
+            }
+
+            Zrodlo.close();
+            Pom.close();
+
+            if(Zrodlo.open(QIODevice::Text | QIODevice::Truncate | QIODevice::WriteOnly) && Pom.open(QIODevice::Text | QIODevice::ReadOnly))
+            {
+                QTextStream str3(&Zrodlo), str4(&Pom);
+
+                bufor1 = str4.readLine();
+
+                while(!bufor1.isNull())
+                {
+                    str3 << bufor1;
+                    bufor1 = str4.readLine();
+                }
+
+                Pom.close();
+                Zrodlo.close();
+                Pom.remove();
+            }
+
+        }
+        else
+        {
+            //OBSLUGA BLEDU = PROBLEM Z PLIKIEM
+        }
+    }
+}
+
+void KoderCpp::wprowadzDoPlikuDependency(QString FilePathAndName, Relacja* relacja)
+{
+
+}
 
 
 

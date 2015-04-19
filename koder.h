@@ -30,6 +30,8 @@ public:
     virtual void dodajRelacje(Relacja* relacja) = 0;
     virtual void wprowadzDoPlikuAgregacjeLubKompozycje(QString FilePathAndName, Relacja* relacja) = 0;
     virtual void wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacja) = 0;
+    virtual void wprowadzDoPlikuGeneralizacje(QString FilePathAndName, Relacja* relacja) = 0;
+    virtual void wprowadzDoPlikuDependency(QString FilePathAndName, Relacja* relacja) = 0;
     void dodajElementDoListy(Element* element);
     virtual PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element* element) = 0;
     virtual QString dekodujAtrybut(const Atrybut& atrybut) = 0;
@@ -63,6 +65,8 @@ public:
     void dodajRelacje(Relacja* relacja);
     void wprowadzDoPlikuAgregacjeLubKompozycje(QString FilePathAndName, Relacja* relacja);
     void wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacja);
+    void wprowadzDoPlikuGeneralizacje(QString FilePathAndName, Relacja* relacja);
+    void wprowadzDoPlikuDependency(QString FilePathAndName, Relacja* relacja);
     PrzestrzenNazw* dajAdresNadrzednejPrzestrzeni(Element *element);
     QString dekodujAtrybut(const QString& atrybut);
     QString dekodujAtrybut(const Atrybut& atrybut);

@@ -25,6 +25,10 @@ public:
     bool czyZgadzaSieAdresZElementemPierwszym(Element* element);
     bool czyZgadzaSieAdresZElementemDrugim(Element* element);
     bool czyPierwszyToPrzestrzen();
+    bool czyPierwszyToKlasa();
+    bool czyDrugiToKlasa();
+    bool czyPierwszyToStruktura();
+    bool czyDrugiToStruktura();
     Element* dajAdresPierwszy(){return Pierwszy;}
     Element* dajAdresDrugi(){return Drugi;}
     Widocznosc getWidoczność(){return widocznosc;}
