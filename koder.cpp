@@ -1831,7 +1831,7 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
                     pomoc1 = str1.readLine();
                     while(!pomoc1.isNull())
                     {
-                        str2 << pomoc1;
+                        str2 << pomoc1 << endl;
                         if(pomoc1.contains(szukana))
                         {
                             pomoc1 = str1.readLine();
@@ -1842,8 +1842,8 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
                                 {
                                     if(relacja->getWidoczność() == wPrivate)
                                     {
-                                        str2 << pomoc1;
-                                        str2 << wpisywana;
+                                        str2 << pomoc1 << endl;
+                                        str2 << wpisywana << endl;
                                     }
                                     else if(relacja->getWidoczność() == wPublic || relacja->getWidoczność() == wProtected)
                                     {
@@ -1894,15 +1894,15 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
                                         }
 
                                         QString sklej = lista.join('\n');
-                                        str2 << sklej;
+                                        str2 << sklej << endl;
                                     }
                                 }
                                 else if(szukana.contains("struct"))
                                 {
                                     if(relacja->getWidoczność() == wPublic)
                                     {
-                                        str2 << pomoc1;
-                                        str2 << wpisywana;
+                                        str2 << pomoc1 << endl;
+                                        str2 << wpisywana << endl;
                                     }
                                     else if(relacja->getWidoczność() == wPrivate || relacja->getWidoczność() == wProtected)
                                     {
@@ -1953,19 +1953,19 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
                                         }
 
                                         QString sklej = lista.join('\n');
-                                        str2 << sklej;
+                                        str2 << sklej << endl;
                                     }
                                 }  // W poniższych nie ma problemu prywatnosci wiec nie zastanawiając się wpisujemy na początek
                                 else if(szukana.contains("enum") || szukana.contains("union") || szukana.contains("namespace"))
                                 {
-                                    str2 << pomoc1;
-                                    str2 << wpisywana;
+                                    str2 << pomoc1 << endl;
+                                    str2 << wpisywana << endl;
                                 }
                             }
                             else
                             {
                                 if(!pomoc1.isNull())
-                                    str2 << pomoc1;
+                                    str2 << pomoc1 << endl;
                             }
                         }
                         pomoc1 = str1.readLine();
@@ -1986,7 +1986,7 @@ void KoderCpp::wprowadzDoPlikuAsocjacje(QString FilePathAndName, Relacja* relacj
                     pomoc1 = str2.readLine();
                     while(!pomoc1.isNull())
                     {
-                        str1 << pomoc1;
+                        str1 << pomoc1 << endl;
                         pomoc1 = str2.readLine();
                     }
 
@@ -2047,14 +2047,15 @@ void KoderCpp::wprowadzDoPlikuGeneralizacje(QString FilePathAndName, Relacja* re
                         {
                             bufor1 += ":" + wstawiana;
                         }
-                        str2 << bufor1;
-                        str2 << bufor2;
-                        bufor1 = str1.readLine();
                     }
 
-                    str2 << bufor1;
+                    str2 << bufor1 << endl;
+                    str2 << bufor2 << endl;
                     bufor1 = str1.readLine();
                 }
+
+                str2 << bufor1 << endl;
+                bufor1 = str1.readLine();
             }
 
             Zrodlo.close();
@@ -2068,7 +2069,7 @@ void KoderCpp::wprowadzDoPlikuGeneralizacje(QString FilePathAndName, Relacja* re
 
                 while(!bufor1.isNull())
                 {
-                    str3 << bufor1;
+                    str3 << bufor1 << endl;
                     bufor1 = str4.readLine();
                 }
 

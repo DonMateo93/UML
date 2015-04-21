@@ -70,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Relacja* relacja1 = new Aggregation(przestrzen,przestrzen2);
     Relacja* relacja2 = new Composition(przestrzen2,klasa1);
     Relacja* relacja3 = new Aggregation(przestrzen,klasa2);
+    Relacja* relacja4 = new Association(struktura3,klasa3);
+    Relacja* relacja5 = new Generalization(klasa1,klasa3);
 
     przestrzen->dodajOperacje(operacja);
     przestrzen->dodajOperacje(operacja2);
@@ -139,9 +141,12 @@ MainWindow::MainWindow(QWidget *parent) :
     kod->dodajRelacje(relacja1);
     kod->dodajRelacje(relacja2);
     kod->dodajRelacje(relacja3);
+    kod->dodajRelacje(relacja4);
+    kod->dodajRelacje(relacja5);
 
 
     kod->wprowadzDoPlikuWszystkieElementy(nazwapliku);
+    kod->wprowadzDoPlikuWszyskieRelacje(nazwapliku);
     kod->poprawKodWPliku(nazwapliku);
 
     delete klasa;
